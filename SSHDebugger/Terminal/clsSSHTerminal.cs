@@ -403,6 +403,18 @@ namespace SSHDebugger
 			}
 		}
 
+		void SyncDirectoryAndChildren (string directory, string localParent, string remoteParent, string searchPattern)
+		{
+			var dirInfo = new DirectoryInfo (directory);
+			var dest = directory.Replace (localParent, remoteParent);
+			WriteLine ("sftp Synchronizing Directories: {0}->{1}...", directory, dest);
+			CreateRemoteDirectory (dest);
+			sftpClient.SynchronizeDirectories (directory, dest, searchPattern);
+			foreach (var dir in Directory.EnumerateDirectories (directory)) {
+				SyncDirectoryAndChildren (dir, Path.Combine (localParent, dirInfo.Name), dest, searchPattern);
+			}
+		}
+
 		public bool SynchronizeDir(String LocalDir, String RemoteDir = null, String SearchPattern = "*" )
 		{
 
@@ -417,10 +429,7 @@ namespace SSHDebugger
 				CreateRemoteDirectory (RemoteDir);
 				sftpClient.SynchronizeDirectories(LocalDir,RemoteDir,SearchPattern);
 				foreach (var dir in Directory.EnumerateDirectories (LocalDir)) {
-					var dirInfo = new DirectoryInfo (dir);
-					var dest = dir.Replace (LocalDir, RemoteDir);
-					CreateRemoteDirectory (dest);
-					sftpClient.SynchronizeDirectories (dir, dest, SearchPattern);
+					SyncDirectoryAndChildren (dir, LocalDir, RemoteDir, SearchPattern);
 				}
 				WriteLine("OK");
 				return true;
