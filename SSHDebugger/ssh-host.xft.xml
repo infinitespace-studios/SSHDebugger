@@ -27,6 +27,7 @@
 #	[exe-file]	 =  output .exe filename
 #   [exe-path]   =  path to output .exe
 # 	[mdb-path]   =  path to output .exe.mdb
+# 	[pdb-path]   =  path to output .exe.pdb
 #	[build-path] =  path to output
 #	[work-dir]	 =  remote working dir
 
@@ -46,7 +47,7 @@ LocalTunnelPort 8000
 RemoteTunnelPort 12345
 
 #Copy executable & debug file to remote.
-scp-copy $[exe-path] $[mdb-path]
+scp-copy $[exe-path] $[pdb-path]
 
 # scp-sync, copys additional build directory file (e.g .dlls that may be needed)
 scp-sync

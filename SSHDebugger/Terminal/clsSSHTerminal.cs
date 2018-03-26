@@ -237,6 +237,7 @@ namespace SSHDebugger
 								try
 								{
 									Write("Changing dir: {0}...",scpPath);
+									CreateRemoteDirectory (scpPath);
 									sftpClient.ChangeDirectory (scpPath);
 								}catch(Exception ex)
 								{
@@ -412,8 +413,15 @@ namespace SSHDebugger
 			Write("sftp Synchronizing Directories: {0}->{1}...",LocalDir,RemoteDir);
 
 			try
-			{	
+			{
+				CreateRemoteDirectory (RemoteDir);
 				sftpClient.SynchronizeDirectories(LocalDir,RemoteDir,SearchPattern);
+				foreach (var dir in Directory.EnumerateDirectories (LocalDir)) {
+					var dirInfo = new DirectoryInfo (dir);
+					var dest = dir.Replace (LocalDir, RemoteDir);
+					CreateRemoteDirectory (dest);
+					sftpClient.SynchronizeDirectories (dir, dest, SearchPattern);
+				}
 				WriteLine("OK");
 				return true;
 			} catch (Exception ex)
@@ -423,6 +431,14 @@ namespace SSHDebugger
 			}
 		}
 
+		void CreateRemoteDirectory (string dest)
+		{
+			try {
+				sftpClient.CreateDirectory (dest);
+			} catch {
+
+			}
+		}
 		public void WriteLine(String output, params object[] args)
 		{
 			WriteLine (String.Format(output, args));

@@ -244,7 +244,8 @@ namespace SSHDebugger
 												}
 												break;
 											case "scp-sync":
-											if (!Terminal.SSH.SynchronizeDir(Path.GetDirectoryName(build_exe_path))) return null;
+												if (!Terminal.SSH.SynchronizeDir(Path.GetDirectoryName(build_exe_path)))
+													return null;
 												break;
 											case "starttunnel": 
 												if (!Terminal.SSH.StartTunnel(LocalTunnelPort,RemoteTunnelPort)) return null;
@@ -305,6 +306,8 @@ namespace SSHDebugger
 				return build_exe_path;
 			case "mdb-path":
 				return build_exe_path + ".mdb";
+			case "pdb-path":
+				return Path.ChangeExtension (build_exe_path, ".pdb");
 			case "build-path":
 				return Path.GetDirectoryName(build_exe_path);
 			case "work-dir":
